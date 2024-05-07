@@ -4,6 +4,7 @@ using System.Linq;
 using Api.Data;
 using Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using minimalApi.Dtos.Stock;
 using minimalApi.Mappers;
 using minimalApi.Models;
@@ -23,14 +24,16 @@ namespace minimalApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             try
             {
-                var stocks = _client.Stocks.ToList().Select(stock => stock.ToStockDto());
+                var stocks = await _client.Stocks.ToListAsync();
+                var stocksDto = stocks.Select(stock => stock.ToStockDto());
+
                 var response = new Response<IEnumerable<StockDto>>
                 {
-                    Data = stocks,
+                    Data = stocksDto,
                     Success = true,
                     Message = "Stocks retrieved successfully"
                 };
@@ -49,11 +52,11 @@ namespace minimalApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                var stock = _client.Stocks.Find(id);
+                var stock = await _client.Stocks.FindAsync(id);
 
                 if (stock == null)
                 {
@@ -87,7 +90,7 @@ namespace minimalApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateStockDto stockData)
+        public async Task<IActionResult> Create([FromBody] CreateStockDto stockData)
         {
             try
             {
@@ -101,8 +104,8 @@ namespace minimalApi.Controllers
                     MarkCap = stockData.MarkCap
                 };
 
-                _client.Stocks.Add(stock);
-                _client.SaveChanges();
+                await _client.Stocks.AddAsync(stock);
+                await _client.SaveChangesAsync();
 
                 var createdResponse = new Response<StockDto>
                 {
@@ -125,11 +128,11 @@ namespace minimalApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] UpdateStockDto stock)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateStockDto stock)
         {
             try
             {
-                var stockToUpdate = _client.Stocks.Find(id);
+                var stockToUpdate = await _client.Stocks.FindAsync(id);
 
                 if (stockToUpdate == null)
                 {
@@ -150,7 +153,7 @@ namespace minimalApi.Controllers
                 stockToUpdate.MarkCap = stock.MarkCap;
 
                 _client.Stocks.Update(stockToUpdate);
-                _client.SaveChanges();
+                await _client.SaveChangesAsync();
 
                 var updatedResponse = new Response<StockDto>
                 {
@@ -173,12 +176,12 @@ namespace minimalApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
 
-                var stock = _client.Stocks.Find(id);
+                var stock = await _client.Stocks.FindAsync(id);
 
                 if (stock == null)
                 {
@@ -192,7 +195,7 @@ namespace minimalApi.Controllers
                 }
 
                 _client.Stocks.Remove(stock);
-                _client.SaveChanges();
+                await _client.SaveChangesAsync();
 
                 var deletedResponse = new Response<StockDto>
                 {
