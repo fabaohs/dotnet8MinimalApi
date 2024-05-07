@@ -22,5 +22,18 @@ namespace minimalApi.Mappers
                 MarkCap = stock.MarkCap
             };
         }
+
+        public static CreateStockDto ToCreateStockDto(this Stock stock)
+        {
+            return new CreateStockDto
+            {
+                Symbol = stock.Symbol,
+                CompanyName = stock.CompanyName,
+                Purchase = stock.Purchase,
+                LastDiv = stock.LastDiv,
+                Industry = stock.Industry,
+                MarkCap = stock.MarkCap
+            };
+        }
     }
 }

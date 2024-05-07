@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Api.Data;
 using Microsoft.AspNetCore.Mvc;
+using minimalApi.Dtos.Stock;
 using minimalApi.Mappers;
 
 namespace minimalApi.Controllers
@@ -47,6 +48,32 @@ namespace minimalApi.Controllers
                 }
 
                 return Ok(stock.ToStockDto());
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] CreateStockDto stockData)
+        {
+            try
+            {
+                var stock = new Api.Models.Stock
+                {
+                    Symbol = stockData.Symbol,
+                    CompanyName = stockData.CompanyName,
+                    Purchase = stockData.Purchase,
+                    LastDiv = stockData.LastDiv,
+                    Industry = stockData.Industry,
+                    MarkCap = stockData.MarkCap
+                };
+
+                _client.Stocks.Add(stock);
+                _client.SaveChanges();
+
+                return CreatedAtAction(nameof(GetById), new { id = stock.Id }, stock.ToStockDto());
             }
             catch (Exception e)
             {
