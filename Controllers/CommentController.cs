@@ -134,5 +134,93 @@ namespace minimalApi.Controllers
                 return StatusCode(500, response);
             }
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateCommentDto updateComment)
+        {
+            try
+            {
+
+                Comment comment = await _client.Comments.Include(comment => comment.Stock).FirstOrDefaultAsync(comment => comment.Id == id);
+
+                if (comment == null)
+                {
+                    var notFoundedCommentResponse = new Response<Comment>
+                    {
+                        Data = null,
+                        Success = false,
+                        Message = "Comment not found"
+                    };
+                    return NotFound(notFoundedCommentResponse);
+                }
+
+                comment.Title = updateComment.Title;
+                comment.Content = updateComment.Content;
+
+                _client.Comments.Update(comment);
+                await _client.SaveChangesAsync();
+
+                var response = new Response<Comment>
+                {
+                    Data = comment,
+                    Success = true,
+                    Message = "Comment updated successfully"
+                };
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                var response = new Response<string>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = e.Message
+                };
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                Comment comment = await _client.Comments.FindAsync(id);
+
+                if (comment == null)
+                {
+                    var notFoundedCommentResponse = new Response<Comment>
+                    {
+                        Data = null,
+                        Success = false,
+                        Message = "Comment not found"
+                    };
+                    return NotFound(notFoundedCommentResponse);
+                }
+
+                _client.Comments.Remove(comment);
+                await _client.SaveChangesAsync();
+
+                var response = new Response<Comment>
+                {
+                    Data = comment,
+                    Success = true,
+                    Message = "Comment deleted successfully"
+                };
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                var response = new Response<string>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = e.Message
+                };
+                return StatusCode(500, response);
+            }
+        }
     }
 }
