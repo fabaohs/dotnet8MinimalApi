@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using minimalApi.Dtos.Comment;
 
 namespace minimalApi.Dtos.Stock
 {
@@ -14,5 +15,6 @@ namespace minimalApi.Dtos.Stock
         public decimal LastDiv { get; set; }
         public string Industry { get; set; } = string.Empty;
         public long MarkCap { get; set; }
+        public List<CommentDto> Comments { get; set; }
     }
 }

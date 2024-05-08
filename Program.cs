@@ -8,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -24,6 +28,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.UseHttpsRedirection();
 
 app.Run();

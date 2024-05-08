@@ -28,7 +28,7 @@ namespace minimalApi.Controllers
         {
             try
             {
-                var stocks = await _client.Stocks.ToListAsync();
+                var stocks = await _client.Stocks.Include(stock => stock.Comments).ToListAsync();
                 var stocksDto = stocks.Select(stock => stock.ToStockDto());
 
                 var response = new Response<IEnumerable<StockDto>>
@@ -56,7 +56,7 @@ namespace minimalApi.Controllers
         {
             try
             {
-                var stock = await _client.Stocks.FindAsync(id);
+                var stock = await _client.Stocks.Include(stock => stock.Comments).FirstOrDefaultAsync(stock => stock.Id == id);
 
                 if (stock == null)
                 {

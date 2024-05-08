@@ -19,7 +19,8 @@ namespace minimalApi.Mappers
                 Purchase = stock.Purchase,
                 LastDiv = stock.LastDiv,
                 Industry = stock.Industry,
-                MarkCap = stock.MarkCap
+                MarkCap = stock.MarkCap,
+                Comments = stock.Comments.Select(c => c.ToCommentDto()).ToList()
             };
         }
 
