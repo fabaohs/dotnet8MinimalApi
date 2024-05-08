@@ -91,5 +91,48 @@ namespace minimalApi.Controllers
             }
         }
 
+        [HttpPost("{stockId}")]
+        public async Task<IActionResult> Create(int stockId, [FromBody] CreateCommentDto createCommentDto)
+        {
+            try
+            {
+                Stock stock = await _client.Stocks.FirstOrDefaultAsync(stock => stock.Id == stockId);
+
+                if (stock == null)
+                {
+                    var notFoundedStockResponse = new Response<Comment>
+                    {
+                        Data = null,
+                        Success = false,
+                        Message = "Stock not found"
+                    };
+                    return BadRequest(notFoundedStockResponse);
+                }
+
+                var newComment = createCommentDto.FromCreateDtoToComment(stockId);
+
+                await _client.Comments.AddAsync(newComment);
+                await _client.SaveChangesAsync();
+
+                var response = new Response<Comment>
+                {
+                    Data = newComment,
+                    Success = true,
+                    Message = "Comment created successfully"
+                };
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                var response = new Response<string>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = e.Message
+                };
+                return StatusCode(500, response);
+            }
+        }
     }
 }

@@ -20,5 +20,15 @@ namespace minimalApi.Mappers
                 StockId = comment.StockId
             };
         }
+
+        public static Comment FromCreateDtoToComment(this CreateCommentDto comment, int stockId)
+        {
+            return new Comment
+            {
+                Title = comment.Title,
+                Content = comment.Content,
+                StockId = stockId
+            };
+        }
     }
 }
